@@ -8,6 +8,15 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+import json
+from decimal import Decimal
+
+# Decimal 값을 처리하기 위한 변환 함수
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)  # 또는 str(obj)로 변환 가능
+    raise TypeError
+
 # MySQL Database configuration for cs
 db_config = {
     'user': os.getenv('SQL_USER'),
@@ -159,7 +168,8 @@ if search_option == "전체 검색":
                 # Apply keyword highlighting
                 highlighted_df = highlight_keywords_in_dataframe(df, keyword, search_type)
                 st.write(highlighted_df.to_html(escape=False, index=False), unsafe_allow_html=True)
-                st.json(json.dumps(json_data, ensure_ascii=False, indent=4))  # Display JSON
+                #st.json(json.dumps(json_data, ensure_ascii=False, indent=4))  # Display JSON
+                st.json(json.dumps(json_data, default=decimal_default, ensure_ascii=False, indent=4))
             else:
                 st.warning(f"{table} 테이블에서 결과를 찾을 수 없습니다.")
 else:
@@ -174,6 +184,7 @@ else:
             # Apply keyword highlighting
             highlighted_df = highlight_keywords_in_dataframe(df, keyword, search_type)
             st.write(highlighted_df.to_html(escape=False, index=False), unsafe_allow_html=True)
-            st.json(json.dumps(json_data, ensure_ascii=False, indent=4))  # Display JSON
+            #st.json(json.dumps(json_data, ensure_ascii=False, indent=4))  # Display JSON
+            st.json(json.dumps(json_data, default=decimal_default, ensure_ascii=False, indent=4))
         else:
             st.warning(f"{selected_table} 테이블에서 결과를 찾을 수 없습니다.")
