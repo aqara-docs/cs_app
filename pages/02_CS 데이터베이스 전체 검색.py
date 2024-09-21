@@ -28,7 +28,7 @@ db_config = {
 }
 
 # 테이블 리스트
-tables = ['aqara_cafe', 'cs_table', 'curtain_ledger', 'doorlock_malfunction_ledger', 'installation_ledger', 'service_ledger','doorlock_installation_ledger','doorlock_installation_partners','work_journal']
+tables = ['aqara_cafe', 'cs_table', 'curtain_ledger', 'doorlock_malfunction_ledger', 'installation_ledger', 'service_ledger','doorlock_installation_ledger','doorlock_installation_partners','work_journal','qna','manual']
 
 def get_actual_columns(table_name, db_config):
     """Fetch actual column names from a specific table in the database."""

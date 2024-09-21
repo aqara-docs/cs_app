@@ -134,7 +134,7 @@ if not df.empty:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
 
     # Convert datetime columns to appropriate types for MySQL
-    datetime_columns = ['registered_date', '수거완료', '교환출고', '환불처리']
+    datetime_columns = ['registered_date']
     for col in datetime_columns:
         if col in df.columns:
             df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%Y-%m-%d')
@@ -162,9 +162,14 @@ if not df.empty:
             row = row.where(pd.notnull(row), None)
 
             # Validate date values and set invalid dates to None
-            for date_col in ['registered_date', '수거완료', '교환출고', '환불처리']:
+            for date_col in ['registered_date']:
                 if row[date_col] and not re.match(r'^\d{4}-\d{2}-\d{2}$', str(row[date_col])):
                     row[date_col] = None
+
+            # Ensure key fields are not None or empty
+            if not row['registered_date'] or not row['고객명'] or not row['주문번호'] or not row['제품']:
+               # st.warning(f"Skipping row {idx} because key fields are missing.")
+                continue
 
             # Define the SQL query to check for existing records
             check_query = """
@@ -178,6 +183,8 @@ if not df.empty:
 
             if result[0] > 0:
                 # If a matching record exists, perform an update
+                #st.write(f"Updating record for {row['고객명']} with 주문번호 {row['주문번호']}")
+                #st.write("Existing records have been updated!!")
                 update_query = """
                 UPDATE service_ledger 
                 SET 완료 = %s, 작성자 = %s, 구분 = %s, 사유 = %s, 배송비 = %s, 주문처 = %s,
@@ -190,13 +197,15 @@ if not df.empty:
                 # Execute the update query
                 cursor.execute(update_query, (
                     row['완료'], row['작성자'], row['구분'], row['사유'], row['배송비'], row['주문처'],
-                    row['연락처'], row['주소변경'], row['우편번호'], row['주소'], row['수량'], row['비고'],row['수거신청'],
+                    row['연락처'], row['주소변경'], row['우편번호'], row['주소'], row['수량'], row['비고'], row['수거신청'],
                     row['수거완료'], row['교환출고'], row['환불처리'], row['택배사'], row['원송장'],
                     row['반송장'], row['교환출고송장'], row['조치'],
                     row['registered_date'], row['고객명'], row['주문번호'], row['제품']
                 ))
             else:
                 # If no matching record exists, perform an insert
+                st.write(f"Inserting new record for {row['고객명']} with 주문번호 {row['주문번호']}")
+                
                 insert_query = """
                 INSERT INTO service_ledger (완료, registered_date, 작성자, 구분, 사유, 배송비, 주문처, 주문번호, 고객명, 
                     연락처, 주소변경, 우편번호, 주소, 제품, 수량, 비고, 수거신청,
