@@ -107,6 +107,7 @@ def highlight_keywords(text, keyword, search_type="AND"):
 
     # Clean and escape the text, remove newlines
     text = html.escape(str(text)).replace("\n", "")  # '\n'을 제거
+    text = html.escape(str(text)).replace("\t", "")  # '\t'을 제거
 
     if search_type == "Exact Match":
         # Escape the entire keyword phrase for exact match
