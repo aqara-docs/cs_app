@@ -3,6 +3,7 @@ import pandas as pd
 import mysql.connector
 import json
 import re
+import html  # HTML 이스케이프를 위한 모듈
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
@@ -28,7 +29,7 @@ db_config = {
 }
 
 # 테이블 리스트
-tables = ['aqara_cafe', 'cs_table', 'curtain_ledger', 'doorlock_malfunction_ledger', 'installation_ledger', 'service_ledger','doorlock_installation_ledger','doorlock_installation_partners','work_journal','qna','manual']
+tables = ['cs_table', 'curtain_ledger', 'doorlock_malfunction_ledger', 'installation_ledger', 'service_ledger','doorlock_installation_ledger','doorlock_installation_partners','work_journal','qna','manual','aqara_cafe']
 
 def get_actual_columns(table_name, db_config):
     """Fetch actual column names from a specific table in the database."""
@@ -100,12 +101,12 @@ def search_data_from_table(table_name, keyword=None, start_date=None, end_date=N
         return pd.DataFrame(), []  # Return empty values in case of error
 
 def highlight_keywords(text, keyword, search_type="AND"):
-    """Highlight keywords in text based on the search type."""
+    """Highlight keywords in text based on the search type and remove newlines."""
     if not keyword:
         return text
 
-    # Clean the text
-    text = str(text)
+    # Clean and escape the text, remove newlines
+    text = html.escape(str(text)).replace("\n", "")  # '\n'을 제거
 
     if search_type == "Exact Match":
         # Escape the entire keyword phrase for exact match
@@ -130,7 +131,7 @@ def highlight_keywords_in_dataframe(df, keyword, search_type="AND"):
     # Copy the DataFrame to avoid modifying the original
     highlighted_df = df.copy()
 
-    # Apply highlighting to all object (text) columns
+    # Apply highlighting to all object (text) columns and remove newlines
     for col in highlighted_df.select_dtypes(include=['object']).columns:
         highlighted_df[col] = highlighted_df[col].apply(lambda x: highlight_keywords(x, keyword, search_type))
 
@@ -165,10 +166,9 @@ if search_option == "전체 검색":
             df, json_data = search_data_from_table(table, keyword=keyword, start_date=start_date_str, end_date=end_date_str, db_config=db_config, search_type=search_type)
 
             if not df.empty:
-                # Apply keyword highlighting
+                # Apply keyword highlighting and remove newlines
                 highlighted_df = highlight_keywords_in_dataframe(df, keyword, search_type)
                 st.write(highlighted_df.to_html(escape=False, index=False), unsafe_allow_html=True)
-                #st.json(json.dumps(json_data, ensure_ascii=False, indent=4))  # Display JSON
                 st.json(json.dumps(json_data, default=decimal_default, ensure_ascii=False, indent=4))
             else:
                 st.warning(f"{table} 테이블에서 결과를 찾을 수 없습니다.")
@@ -181,10 +181,9 @@ else:
         
         if not df.empty:
             st.write(f"### {selected_table} 테이블 검색 결과")
-            # Apply keyword highlighting
+            # Apply keyword highlighting and remove newlines
             highlighted_df = highlight_keywords_in_dataframe(df, keyword, search_type)
             st.write(highlighted_df.to_html(escape=False, index=False), unsafe_allow_html=True)
-            #st.json(json.dumps(json_data, ensure_ascii=False, indent=4))  # Display JSON
             st.json(json.dumps(json_data, default=decimal_default, ensure_ascii=False, indent=4))
         else:
             st.warning(f"{selected_table} 테이블에서 결과를 찾을 수 없습니다.")
