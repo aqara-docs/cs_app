@@ -130,7 +130,7 @@ for article in data['articles']:
     filtered_text = BeautifulSoup(content, "html.parser").get_text()
     #st.write(f"Date: {article_date}")
     #st.write(filtered_text)
-    articles_data.append({'date': article_date, 'text': filtered_text,'writer': article['writer']})
+    articles_data.append({'registered_date': article_date, 'contents': filtered_text,'writer': article['writer']})
 
 
 df = pd.DataFrame(articles_data)
@@ -144,7 +144,7 @@ korean_device_names_to_analyze = ['M2','E1','허브', '센서', '플러그', '�
 korean_device_names = []
 if len(df)!=0:
 
-    for text in df['text']:
+    for text in df['contents']:
         for device in korean_device_names_to_analyze:
             matches = re.findall(r'\b{}\b'.format(device), text)
             korean_device_names.extend(matches)
@@ -167,7 +167,7 @@ if len(korean_word_count)!=0:
     # 빈도수가 높은 순으로 정렬된 튜플 리스트 생성
     sorted_korean_word_count = korean_word_count.most_common()
     print(sorted_korean_word_count)
-    print(df['text'])
+    print(df['contents'])
 
     # 정렬된 데이터를 사용하여 막대 그래프 생성
     fig, ax = plt.subplots(figsize=(10, 8))
