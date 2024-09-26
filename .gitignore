@@ -2,6 +2,6 @@
 .streamlit/chrome-mac-arm64/
 .streamlit/doorlock-432423-390c2bdfb237.json
 pages/refresh.csv
-contents.csv
+./contents.csv
 private_files/
 private_embeddings/
