@@ -125,7 +125,13 @@ if not df.empty:
         '수거완료', '교환출고', '환불처리', '택배사', 
         '원송장', '반송장', '교환출고송장', '조치'
     ]
-
+    # Fill missing columns with default values
+    for col in required_columns:
+        if col not in df.columns:
+            if col == '주소변경':
+                df[col] = 0  # 기본적으로 '주소변경'은 0으로 설정 (boolean 값)
+            else:
+                df[col] = None  # 나머지 값들은 None으로 설정
     df = df[required_columns]
 
     # Convert numeric columns to appropriate types
