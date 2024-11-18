@@ -15,7 +15,7 @@ load_dotenv()
 db_user = os.getenv('SQL_USER')
 db_password = os.getenv('SQL_PASSWORD')
 db_host = os.getenv('SQL_HOST')
-db_database = os.getenv('SQL_DATABASE')
+db_database = os.getenv('SQL_DATABASE_NEWBIZ')
 
 # Setting up Streamlit page
 st.set_page_config(
@@ -104,7 +104,7 @@ def load_database_data(tables):
 
 # Sidebar for table selection
 def table_selector():
-    available_tables = ["aqara_cafe", "cs_table", "doorlock_malfunction_ledger", "curtain_ledger", "installation_ledger", "service_ledger"]
+    available_tables = ["partner_candidates","newbiz_preparation","work_journal","weekly_journal","contact_list"]
     selected_tables = st.sidebar.multiselect("Select tables to load", available_tables, default=available_tables)
     
     load_button = st.sidebar.button("Load selected tables")

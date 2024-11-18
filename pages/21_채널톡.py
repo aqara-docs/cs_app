@@ -36,7 +36,7 @@ headers = {
 #params_sort = st.selectbox("정렬",("desc","asc"))
 params_sort = "desc"
 params_limit = st.slider("검색 데이터 수",min_value=20,max_value=500,step=20,value=100)
-params_display = st.slider("보여줄 데이터 수", min_value=1,max_value=10,step=1,value=5)
+params_display = st.slider("보여줄 데이터 수", min_value=1,max_value=30,step=1,value=15)
 params_state_temp = st.selectbox("고객 지원 완료 여부",("새질문 또는 답변 중","답변 완료"))
 if params_state_temp == "답변 완료":
     params_state = "closed"

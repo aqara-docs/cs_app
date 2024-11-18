@@ -458,6 +458,6 @@ if response.status_code == 200:
     df['updatedAt'] = pd.to_datetime(df['updatedAt'], unit='ms') + pd.Timedelta(hours=9)
     df['createdAt'] = pd.to_datetime(df['createdAt'], unit='ms') + pd.Timedelta(hours=9)
     df_sorted = df.loc[df['personType']=="user", ['updatedAt', 'text','personType']].sort_values(by='updatedAt', ascending=False)
-    st.table(df_sorted.loc[:,['updatedAt','text']].dropna().head(10))
+    st.table(df_sorted.loc[:,['updatedAt','text']].dropna().head(20))
 else:
     print("API 요청에 실패하였습니다.")

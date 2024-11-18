@@ -64,7 +64,7 @@ def clean_title(title):
 def fetch_titles_from_db():
     conn = get_mysql_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT DISTINCT title FROM manual")
+    cursor.execute("SELECT DISTINCT title FROM `manual`")
     titles = cursor.fetchall()
     cursor.close()
     conn.close()
