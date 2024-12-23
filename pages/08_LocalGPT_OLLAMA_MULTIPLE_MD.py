@@ -46,10 +46,8 @@ llm = ChatOllama(
     ],
 )
 
-
-
-@st.cache_data(show_spinner="Embedding file...")
-def embed_file(file):
+@st.cache_data(show_spinner="Embedding files...")
+def embed_files(files):
     # Define the directory path
     directory = "./private_files/"
     
@@ -57,26 +55,30 @@ def embed_file(file):
     if not os.path.exists(directory):
         os.makedirs(directory)
     
-    # Save the file to the directory
-    file_path = os.path.join(directory, file.name)
+    all_docs = []
     
-    with open(file_path, "wb") as f:
-        f.write(file.read())
-    
-    cache_dir = LocalFileStore(f"./private_embeddings/{file.name}")
-    splitter = CharacterTextSplitter.from_tiktoken_encoder(
-        separator="\n",
-        chunk_size=600,
-        chunk_overlap=100,
-    )
-    
-    loader = UnstructuredFileLoader(file_path)
-    docs = loader.load_and_split(text_splitter=splitter)
+    for file in files:
+        # Save the file to the directory
+        file_path = os.path.join(directory, file.name)
+        
+        with open(file_path, "wb") as f:
+            f.write(file.read())
+        
+        cache_dir = LocalFileStore(f"./private_embeddings/{file.name}")
+        splitter = CharacterTextSplitter.from_tiktoken_encoder(
+            separator="\n",
+            chunk_size=600,
+            chunk_overlap=100,
+        )
+        
+        loader = UnstructuredFileLoader(file_path)
+        docs = loader.load_and_split(text_splitter=splitter)
+        all_docs.extend(docs)
     
     embeddings = OllamaEmbeddings(model="EEVE-Korean-10.8B:latest")
     cached_embeddings = CacheBackedEmbeddings.from_bytes_store(embeddings, cache_dir)
     
-    vectorstore = FAISS.from_documents(docs, cached_embeddings)
+    vectorstore = FAISS.from_documents(all_docs, cached_embeddings)
     retriever = vectorstore.as_retriever()
     
     return retriever
@@ -128,16 +130,17 @@ Upload your files on the sidebar.
 )
 
 with st.sidebar:
-    file = st.file_uploader(
-        "Upload a .md .txt .pdf or .docx file",
+    files = st.file_uploader(
+        "Upload .md .txt .pdf or .docx files",
         type=["md","pdf", "txt", "docx"],
+        accept_multiple_files=True  # Enable multiple file upload
     )
 
-if file:
-    retriever = embed_file(file)
+if files:  # Check if any files were uploaded
+    retriever = embed_files(files)  # Process all uploaded files
     send_message("I'm ready! Ask away!", "ai", save=False)
     paint_history()
-    message = st.chat_input("Ask anything about your file...")
+    message = st.chat_input("Ask anything about your files...")
     if message:
         send_message(message, "human")
         chain = (

@@ -53,7 +53,7 @@ st.subheader("Fill in your weekly journal")
 등록일 = st.date_input("등록일", value=current_time)
 
 # Task type selection
-task_type = st.selectbox("업무유형", ["파트너 컨택", "기술 검토","DB 구축", "기타"])
+task_type = st.selectbox("업무유형", ["미팅", "파트너 컨택","기술 검토", "DB/AI","기타"])
 
 # 작업자 선택
 worker = st.selectbox("담당자", ["김현철","이지이","장창환","이상현","기타"])

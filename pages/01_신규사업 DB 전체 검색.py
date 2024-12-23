@@ -29,7 +29,7 @@ db_config = {
 }
 
 # 테이블 리스트
-tables = ['newbiz_preparation','partner_candidates','work_journal','weekly_journal','contact_list']
+tables = ['meeting_minutes','newbiz_preparation','partner_candidates','work_journal','weekly_journal','contact_list']
 
 def get_actual_columns(table_name, db_config):
     """Fetch actual column names from a specific table in the database."""
